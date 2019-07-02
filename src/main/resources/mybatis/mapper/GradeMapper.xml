@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.mapper.GradeMapper">
+  <resultMap id="BaseResultMap" type="com.leo.entity.Grade">
+    <id column="gid" jdbcType="SMALLINT" property="gid" />
+    <result column="gname" jdbcType="VARCHAR" property="gname" />
+    <collection property="students" javaType="java.util.List" ofType="com.leo.entity.Students">
+      <id column="xh" jdbcType="INTEGER" property="xh" />
+      <result column="name" jdbcType="VARCHAR" property="name" />
+      <result column="sex" jdbcType="VARCHAR" property="sex" />
+      <result column="age" jdbcType="TINYINT" property="age" />
+      <result column="birthday" jdbcType="DATE" property="birthday" />
+      <result column="address" jdbcType="VARCHAR" property="address" />
+      <result column="state" jdbcType="TINYINT" property="state" />
+      <result column="gid" jdbcType="SMALLINT" property="gid" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List">
+    g.gid, g.gname, s.xh, s.name, s.sex, s.age, s.birthday, s.address, s.state, s.gid, g.gname
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Short" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+    grade g
+    LEFT JOIN
+    students s
+    ON g.gid = s.gid
+    where g.gid = #{gid,jdbcType=SMALLINT}
+  </select>
+  <select id="selectGrades" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+    grade g
+    LEFT JOIN
+    students s
+    ON g.gid = s.gid
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Short">
+    delete from grade
+    where gid = #{gid,jdbcType=SMALLINT}
+  </delete>
+  <insert id="insert" parameterType="com.leo.entity.Grade">
+    insert into grade (gid, gname)
+    values (#{gid,jdbcType=SMALLINT}, #{gname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.leo.entity.Grade">
+    insert into grade
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="gid != null">
+        gid,
+      </if>
+      <if test="gname != null">
+        gname,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="gid != null">
+        #{gid,jdbcType=SMALLINT},
+      </if>
+      <if test="gname != null">
+        #{gname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.leo.entity.Grade">
+    update grade
+    <set>
+      <if test="gname != null">
+        gname = #{gname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where gid = #{gid,jdbcType=SMALLINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.leo.entity.Grade">
+    update grade
+    set gname = #{gname,jdbcType=VARCHAR}
+    where gid = #{gid,jdbcType=SMALLINT}
+  </update>
+</mapper>

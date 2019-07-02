@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.leo.mapper.StudentsMapper">
+  <resultMap id="BaseResultMap" type="com.leo.entity.Students">
+    <id column="xh" jdbcType="INTEGER" property="xh" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="age" jdbcType="TINYINT" property="age" />
+    <result column="birthday" jdbcType="DATE" property="birthday" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="gid" jdbcType="SMALLINT" property="gid" />
+    <!-- association字面意思关联，这里只专门做一对一关联； property表示是com.mybatis.bean.StudentTemp中的属性名称；
+            javaType表示该属性是什么类型对象 -->
+    <association property="grade" javaType="com.leo.entity.Grade">
+        <!-- property 表示com.mybatis.bean.Class中的属性； column 表示表中的列名 -->
+        <id property="gid" column="gid" />
+        <result property="gname" column="gname" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List">
+    s.xh, s.name, s.sex, s.age, s.birthday, s.address, s.state, s.gid, g.gname
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+      students s
+    LEFT JOIN
+      grade g
+    ON s.gid = g.gid
+    WHERE s.xh = #{xh,jdbcType=INTEGER}
+  </select>
+  <select id="selectStudents" parameterType="com.leo.util.StudentsParams" resultMap="BaseResultMap" >
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+    students s
+    LEFT JOIN
+    grade g
+    ON s.gid = g.gid
+    WHERE 1 = 1
+    <trim prefix=" " suffix=" " suffixOverrides=" ">
+      <if test="name != null">
+        and s.name like concat('%',#{name},'%')
+      </if>
+      <if test="sex != null">
+        and s.sex like concat('%',#{sex},'%')
+      </if>
+      <if test="age != null">
+        and s.age like concat('%',#{age},'%')
+      </if>
+      <if test="birthdayFrom != null">
+        and s.birthday &gt; #{birthdayFrom}
+      </if>
+      <if test="birthdayTo != null">
+        and s.birthday &lt; #{birthdayTo}
+      </if>
+      <if test="address != null">
+        and s.address like concat('%',#{address},'%')
+      </if>
+      <if test="state != null">
+        and s.state = #{state}
+      </if>
+      <if test="gid != null">
+        and s.gid like concat('%',#{gid},'%')
+      </if>
+      <if test="grade != null">
+        and g.gname like concat('%',#{grade.gname},'%')
+      </if>
+    </trim>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from students
+    where xh = #{xh,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.leo.entity.Students">
+    insert into students (xh, name, sex,
+      age, birthday, address, 
+      state, gid)
+    values (#{xh,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR},
+      #{age,jdbcType=TINYINT}, #{birthday,jdbcType=DATE}, #{address,jdbcType=VARCHAR}, 
+      #{state,jdbcType=TINYINT}, #{gid,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.leo.entity.Students">
+    insert into students
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="xh != null">
+        xh,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="gid != null">
+        gid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="xh != null">
+        #{xh,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=TINYINT},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="gid != null">
+        #{gid,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.leo.entity.Students">
+    update students
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=TINYINT},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="gid != null">
+        gid = #{gid,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where xh = #{xh,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.leo.entity.Students">
+    update students
+    set name = #{name,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=VARCHAR},
+      age = #{age,jdbcType=TINYINT},
+      birthday = #{birthday,jdbcType=DATE},
+      address = #{address,jdbcType=VARCHAR},
+      state = #{state,jdbcType=TINYINT},
+      gid = #{gid,jdbcType=SMALLINT}
+    where xh = #{xh,jdbcType=INTEGER}
+  </update>
+</mapper>
